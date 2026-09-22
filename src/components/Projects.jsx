@@ -271,7 +271,7 @@ const Projects = () => {
         {/* Swipeable one-card-at-a-time carousel — same visual language as desktop, scaled for phones */}
         <div
           ref={mobileCarouselRef}
-          className="w-full mt-8 flex items-stretch gap-4 px-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar touch-pan-x"
+          className="w-full mt-8 flex items-stretch gap-4 px-4 overflow-x-auto overflow-y-hidden snap-x snap-mandatory hide-scrollbar touch-auto"
         >
           <style>{`
             .hide-scrollbar::-webkit-scrollbar { display: none; }
