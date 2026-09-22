@@ -133,6 +133,7 @@ const Hero = () => {
 
   return (
     <section
+      id="home"
       ref={sectionRef}
       className="relative w-full min-h-screen lg:h-screen bg-[#050505] overflow-x-hidden lg:overflow-hidden flex flex-col justify-between select-none cursor-none"
     >
