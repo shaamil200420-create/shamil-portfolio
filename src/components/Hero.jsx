@@ -216,12 +216,12 @@ const Hero = () => {
               </span>
             </h1>
 
-            <div className="hero-anim-item flex flex-wrap items-center gap-x-1.5 gap-y-1.5 text-xs font-mono text-red-400 font-bold">
+            <div className="hero-anim-item flex flex-wrap items-center gap-x-1.5 gap-y-1.5 text-xs font-mono text-white/90 font-bold">
               <span className="px-1.5 py-0.5 bg-red-500/10 border border-red-500/30 rounded text-red-500 shrink-0 whitespace-nowrap">99.9% Uptime</span>
               <span className="text-white/40">•</span>
               <span className="whitespace-nowrap">React • JavaScript • Python</span>
               <span className="text-white/40">•</span>
-              <span className="text-white/70 whitespace-nowrap">MySQL • ML</span>
+              <span className="text-white/90 whitespace-nowrap">MySQL • ML</span>
             </div>
 
             <p className="hero-anim-item text-sm md:text-base text-white/80 font-light leading-relaxed max-w-md drop-shadow">
@@ -452,9 +452,9 @@ const Hero = () => {
             <span className="text-white/30">•</span>
             <span className="text-white/90 whitespace-nowrap">Python</span>
             <span className="text-white/30">•</span>
-            <span className="text-white/70 whitespace-nowrap">MySQL</span>
+            <span className="text-white/90 whitespace-nowrap">MySQL</span>
             <span className="text-white/30">•</span>
-            <span className="text-white/70 whitespace-nowrap">ML</span>
+            <span className="text-white/90 whitespace-nowrap">ML</span>
           </div>
 
           {/* 7. CTA buttons — equal width, minimum 44px touch height, single-line labels */}
