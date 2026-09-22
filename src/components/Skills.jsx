@@ -3,6 +3,10 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
+// Prevent iOS Safari's address-bar show/hide from firing spurious resize-driven
+// ScrollTrigger refreshes while the user scrolls — the standard fix for the
+// intermittent mobile ScrollTrigger/pin glitches this causes.
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 const skillCategories = [
   {
@@ -50,7 +54,7 @@ const Skills = () => {
   const textRefs = useRef([]);
 
   const handleScroll = (e) => {
-    if (window.innerWidth >= 769) return;
+    if (window.innerWidth >= 768) return;
     const container = e.target;
     const center = container.scrollLeft + container.offsetWidth / 2;
     
@@ -86,7 +90,7 @@ const Skills = () => {
     let ctx = gsap.context(() => {
       let mm = gsap.matchMedia();
 
-      mm.add("(min-width: 769px)", () => {
+      mm.add("(min-width: 768px)", () => {
         const updateCards = (p) => {
           cardsRef.current.forEach((card, i) => {
             if (!card) return;
@@ -146,20 +150,58 @@ const Skills = () => {
         });
       });
 
-      mm.add("(max-width: 768px)", () => {
+      mm.add("(max-width: 767px)", () => {
+        // Defensive cleanup: if a desktop pinned ScrollTrigger instance for this
+        // section is still active (e.g. a fast resize/orientation change crossed
+        // the breakpoint before the desktop branch finished tearing down), kill it
+        // now so its pin, pin-spacer, and inline transforms can never leak into
+        // the mobile layout and leave cards stuck mid-3D-transform.
+        ScrollTrigger.getAll().forEach((st) => {
+          if (st.trigger === sectionRef.current) st.kill();
+        });
+
+        // Fully reset every card/background/text element to plain CSS state first.
+        // clearProps("all") — rather than the previous partial property list —
+        // guarantees no residual x/y/z/rotation/scale/opacity/zIndex from the
+        // desktop 3D carousel is left behind (zIndex in particular was never being
+        // cleared before, which could leave one card stacked above its neighbors).
+        cardsRef.current.forEach((card) => { if (card) gsap.set(card, { clearProps: "all" }); });
+        bgRefs.current.forEach((bg) => { if (bg) gsap.set(bg, { clearProps: "all" }); });
+        textRefs.current.forEach((txt) => { if (txt) gsap.set(txt, { clearProps: "all" }); });
+
+        // Small entrance animation, then hand each card back to normal CSS flow —
+        // no GSAP transform is left in place once it completes, so cards can never
+        // remain stuck in an offset/overlapping state.
         cardsRef.current.forEach((card, i) => {
-           if (card) {
-             gsap.set(card, { clearProps: "x,y,z,rotation,scale,opacity,position" });
-             gsap.set(card, { scale: i === 0 ? 1 : 0.9 });
-           }
+          if (!card) return;
+          gsap.fromTo(
+            card,
+            { opacity: 0, y: 20, scale: 0.96 },
+            {
+              opacity: 1,
+              y: 0,
+              scale: i === 0 ? 1 : 0.9,
+              duration: 0.5,
+              delay: i * 0.05,
+              ease: "power2.out",
+              overwrite: "auto",
+              onComplete: () => {
+                // Clear only the transform/positioning props that could ever cause
+                // stacking; keep the intentional active/inactive scale + opacity
+                // that is part of the existing card design.
+                gsap.set(card, { clearProps: "x,y,z,rotation,rotationZ,position,zIndex" });
+                gsap.set(card, { opacity: 1, scale: i === 0 ? 1 : 0.9 });
+              }
+            }
+          );
         });
-        
+
         bgRefs.current.forEach((bg, i) => {
-           if (bg) gsap.set(bg, { clearProps: "all", opacity: i === 0 ? 1 : 0 });
+           if (bg) gsap.set(bg, { opacity: i === 0 ? 1 : 0 });
         });
-        
+
         textRefs.current.forEach((txt, i) => {
-           if (txt) gsap.set(txt, { clearProps: "all", opacity: i === 0 ? 1 : 0 });
+           if (txt) gsap.set(txt, { opacity: i === 0 ? 1 : 0 });
         });
       });
 
